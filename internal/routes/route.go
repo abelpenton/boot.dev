@@ -4,14 +4,27 @@ import (
 	"net/http"
 )
 
-func NewRouter() http.Handler {
-	mux := http.NewServeMux()
+func FtpRouter() http.Handler {
+	router := http.NewServeMux()
 
-	mux.HandleFunc("/", indexHandler)
+	router.HandleFunc("/app/", func(w http.ResponseWriter, r *http.Request) {
+		http.StripPrefix("/app", http.FileServer(http.Dir("client"))).ServeHTTP(w, r)
+	})
 
-	return mux
+	router.HandleFunc("/app/assets/", func(w http.ResponseWriter, r *http.Request) {
+		http.StripPrefix("/app/assets/", http.FileServer(http.Dir("assets"))).ServeHTTP(w, r)
+	})
+
+	router.HandleFunc("/", readinessHandler)
+
+	return router
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.FileServer(http.Dir("../../index.html"))
+func readinessHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write([]byte("OK"))
+	if err != nil {
+		return
+	}
 }
