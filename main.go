@@ -1,13 +1,19 @@
 package main
 
 import (
-	"awesomeProject/internal/routes"
 	"fmt"
 	"net/http"
+	"sync/atomic"
+
+	"boot.dev/internal/routes"
 )
 
 func main() {
-	router := routes.FtpRouter()
+	config := &routes.ApiConfig{
+		Hits: atomic.Int32{},
+	}
+
+	router := routes.FtpRouter(config)
 
 	port := "8080"
 	addr := fmt.Sprintf(":%s", port)

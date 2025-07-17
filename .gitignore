@@ -1,1 +1,10 @@
 .idea/
+.vscode/
+/tmp/
+
+.air.toml
+.DS_Store
+*.log
+*.tmp
+
+*.txt
